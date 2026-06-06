@@ -124,11 +124,6 @@ src/main/java/org/example/
     ├── dtos/                             # records de request/response REST
     ├── mappers/                          # entity → response
     └── exception/GlobalExceptionHandler.java
-```
-
-Decisões arquiteturais e tradeoffs estão documentados em `docs/superpowers/specs/2026-06-06-spring-boot-postgres-migration-design.md`.
-
----
 
 ## Endpoints principais
 
