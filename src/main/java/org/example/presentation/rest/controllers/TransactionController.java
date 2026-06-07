@@ -85,7 +85,8 @@ public class TransactionController {
     Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateTime"));
     Page<TransactionEntity> result = transactionService.search(
         new TransactionFilterDto(principal.userId(), type, categoryId, from, to), pageable);
-    return PageResponse.from(result, result.map(RestMappers::toResponse).getContent());
+    Page<TransactionResponse> mapped = result.map(RestMappers::toResponse);
+    return PageResponse.from(mapped, mapped.getContent());
   }
 
   @GetMapping("/{id}")

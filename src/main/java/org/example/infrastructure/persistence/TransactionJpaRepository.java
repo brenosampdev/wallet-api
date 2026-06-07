@@ -23,8 +23,8 @@ public interface TransactionJpaRepository extends JpaRepository<TransactionEntit
       WHERE t.userId = :userId
         AND (:type IS NULL OR t.type = :type)
         AND (:categoryId IS NULL OR t.categoryId = :categoryId)
-        AND (:from IS NULL OR t.dateTime >= :from)
-        AND (:to IS NULL OR t.dateTime <= :to)
+        AND (CAST(:from AS timestamp) IS NULL OR t.dateTime >= :from)
+        AND (CAST(:to AS timestamp) IS NULL OR t.dateTime <= :to)
       """)
   Page<TransactionEntity> search(
       @Param("userId") UUID userId,

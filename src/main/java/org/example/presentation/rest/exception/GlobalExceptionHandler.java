@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -60,6 +61,24 @@ public class GlobalExceptionHandler {
   public ProblemDetail handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
     return problem(HttpStatus.BAD_REQUEST, "Bad request",
         "Parâmetro '" + ex.getName() + "' tem valor inválido");
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ProblemDetail handleUnreadable(HttpMessageNotReadableException ex) {
+    String detail = "Corpo da requisição inválido ou malformado";
+    Throwable cause = ex.getMostSpecificCause();
+    if (cause != null && cause.getMessage() != null) {
+      String msg = cause.getMessage();
+      if (msg.contains("Cannot deserialize")) {
+        int idx = msg.indexOf("Cannot deserialize");
+        detail = "JSON inválido: " + msg.substring(idx, Math.min(idx + 160, msg.length()));
+      } else if (msg.contains("not one of the values accepted for EnumClass")) {
+        detail = "Valor de enum inválido; use os valores aceitos (case-sensitive)";
+      } else if (msg.contains("Required request body is missing")) {
+        detail = "Corpo da requisição é obrigatório";
+      }
+    }
+    return problem(HttpStatus.BAD_REQUEST, "Bad request", detail);
   }
 
   @ExceptionHandler(OptimisticLockingFailureException.class)
