@@ -3,25 +3,26 @@ FROM gradle:8.10.2-jdk21 AS builder
 USER root
 WORKDIR /app
 
-# Copia apenas os arquivos de configuração para aproveitar o cache de dependências
+ARG BUILD_MODE=prod
+
 COPY build.gradle settings.gradle gradle.properties* ./
-COPY gradle gradle
+COPY gradle/ gradle/
+COPY gradlew .
+RUN chmod +x gradlew
 
-# Baixa as dependências (sem compilar)
-RUN gradle dependencies --no-daemon || true
+RUN ./gradlew dependencies --no-daemon || true
 
-# Copia o código-fonte e faz o build
 COPY src ./src
-RUN gradle build -x test --no-daemon
+RUN ./gradlew build -x test --no-daemon
 
 # ---- Estágio de execução ----
 FROM eclipse-temurin:21-jre
-ARG JAVA_OPTS
-WORKDIR /app
 
-# Copia o JAR gerado (ajuste o nome se necessário)
-COPY --from=builder /app/build/libs/*.jar app.jar
+ARG JAVA_OPTS=""
+ENV JAVA_OPTS=${JAVA_OPTS}
+
+WORKDIR /app
+COPY --from=builder /app/build/libs/app.jar app.jar
 
 EXPOSE 8000
-
-ENTRYPOINT ["sh", "-c","java ${JAVA_OPTS} -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar app.jar"]

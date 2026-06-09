@@ -6,7 +6,9 @@ plugins {
 
 group = 'org.example'
 version = '1.0-SNAPSHOT'
-
+bootJar {
+    archiveFileName = 'app.jar'
+}
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
