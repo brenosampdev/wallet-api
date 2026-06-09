@@ -3,12 +3,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        BUILD_MODE: prod
+        JAVA_OPTS: ${JAVA_OPTS}
+    env_file:
+      - .env
     container_name: spring-boot-app
     ports:
       - "8080:8000"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=8000
     depends_on:
       postgres:
         condition: service_healthy
