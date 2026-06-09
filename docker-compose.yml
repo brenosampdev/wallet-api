@@ -7,7 +7,7 @@ services:
         BUILD_MODE: prod
         JAVA_OPTS: ${JAVA_OPTS}
     env_file:
-      - .env
+      - ./.env
     container_name: spring-boot-app
     ports:
       - "8080:8000"
